@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cue Counter - Advanced Snooker Scoreboard App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FF8C00;
+            --secondary-color: #1E88E5;
+            --dark-bg: #121212;
+            --light-bg: #f5f5f5;
+            --card-dark: rgba(255, 255, 255, 0.05);
+            --card-light: rgba(255, 255, 255, 0.8);
+            --text-dark: #ffffff;
+            --text-light: #121212;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            background-color: var(--light-bg);
+            color: var(--text-light);
+            overflow-x: hidden;
+            transition: background-color 0.3s ease;
+        }
+        
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--text-dark);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #141E30, #243B55);
+            color: white;
+            padding: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1608275256494-83762d76c5e8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80') center/cover no-repeat;
+            opacity: 0.2;
+            z-index: 0;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 140, 0, 0.7);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 10px rgba(255, 140, 0, 0.7);
+        }
+        
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            background-color: var(--primary-color);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .hero {
+            position: relative;
+            padding: 120px 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1596731498067-3898a809fe1f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80');
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+            color: white;
+        }
+        
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .hero p {
+            font-size: 1.5rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4);
+            margin: 10px;
+        }
+        
+        .cta-button.secondary {
+            background-color: var(--secondary-color);
+            box-shadow: 0 4px 15px rgba(30, 136, 229, 0.4);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 140, 0, 0.5);
+        }
+        
+        .cta-button.secondary:hover {
+            box-shadow: 0 6px 20px rgba(30, 136, 229, 0.5);
+        }
+        
+        section {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            font-weight: 700;
+            color: var(--primary-color);
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 4px;
+            background-color: var(--primary-color);
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .features {
+            background-color: white;
+        }
+        
+        .dark-mode .features {
+            background-color: var(--dark-bg);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background-color: var(--card-light);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .dark-mode .feature-card {
+            background-color: var(--card-dark);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark-mode .feature-card:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+        
+        .feature-icon {
+            background-color: var(--primary-color);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(255, 140, 0, 0.3);
+        }
+        
+        .feature-icon img {
+            width: 35px;
+            height: 35px;
+            filter: invert(1);
+        }
+        
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        .dark-mode .feature-title {
+            color: var(--text-dark);
+        }
+        
+        .dark-mode .feature-description {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .screenshots {
+            background-color: #f8f9fa;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dark-mode .screenshots {
+            background-color: #1a1a1a;
+        }
+        
+        .screenshots-container {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 20px 0;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .screenshot-card {
+            min-width: 300px;
+            height: 600px;
+            background-color: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+            scroll-snap-align: start;
+            flex: 0 0 auto;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode .screenshot-card {
+            background-color: #2a2a2a;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .screenshot-card:hover {
+            transform: scale(1.03);
+        }
+        
+        .screenshot-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 30px;
+        }
+        
+        .screenshot-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #FF8C00, #FF512F);
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .features-detailed {
+            background-color: white;
+        }
+        
+        .dark-mode .features-detailed {
+            background-color: var(--dark-bg);
+        }
+        
+        .feature-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 100px;
+        }
+        
+        .feature-row:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+        
+        .feature-content, .feature-image {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .feature-image img {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark-mode .feature-image img {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .feature-image .mockup-container {
+            background-color: var(--card-light);
+            width: 100%;
+            height: 400px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .dark-mode .feature-image .mockup-container {
+            background-color: var(--card-dark);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .mockup-content {
+            position: relative;
+            width: 90%;
+            height: 90%;
+            background: linear-gradient(135deg, #FF8C00, #FF512F);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .feature-content h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .feature-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+        
+        .feature-list li {
+            margin-bottom: 10px;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .feature-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .dark-mode .feature-list li {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .testimonials {
+            background: linear-gradient(135deg, #141E30, #243B55);
+            color: white;
+            position: relative;
+        }
+        
+        .testimonials::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1596731498067-3898a809fe1f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80') center/cover no-repeat;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .testimonials .section-title {
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .testimonials .section-title::after {
+            background-color: white;
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .testimonial-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .testimonial-content {
+            font-style: italic;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+        
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .author-info h4 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        
+        .author-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .pricing {
+            background-color: #f8f9fa;
+        }
+        
+        .dark-mode .pricing {
+            background-color: #1a1a1a;
+        }
+        
+        .pricing-cards {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .pricing-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 40px 30px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            min-width: 300px;
+            max-width: 350px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dark-mode .pricing-card {
+            background-color: #2a2a2a;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .pricing-card.popular {
+            transform: scale(1.05);
+            border: 2px solid var(--primary-color);
+        }
+        
+        .pricing-card.popular::before {
+            content: 'MOST POPULAR';
+            position: absolute;
+            top: 15px;
+            right: -35px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.8rem;
+            padding: 5px 40px;
+            transform: rotate(45deg);
+            font-weight: bold;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .pricing-name {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--text-light);
+        }
+        
+        .dark-mode .pricing-price {
+            color: var(--text-dark);
+        }
+        
+        .pricing-period {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .dark-mode .pricing-period {
+            color: #aaa;
+        }
+        
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+        
+        .pricing-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        
+        .dark-mode .pricing-features li {
+            border-bottom: 1px solid #333;
+        }
+        
+        .pricing-features li::before {
+            content: "✓";
+            color: var(--primary-color);
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .pricing-features li.disabled {
+            color: #999;
+            text-decoration: line-through;
+        }
+        
+        .dark-mode .pricing-features li.disabled {
+            color: #666;
+        }
+        
+        .pricing-features li.disabled::before {
+            content: "✕";
+            color: #999;
+        }
+        
+        .pricing-button {
+            display: block;
+            text-align: center;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .pricing-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 140, 0, 0.3);
+        }
+
+        .faq {
+            background-color: white;
+        }
+        
+        .dark-mode .faq {
+            background-color: var(--dark-bg);
+        }
+        
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .faq-item {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            background-color: var(--card-light);
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode .faq-item {
+            background-color: var(--card-dark);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .faq-question {
+            padding: 20px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-light);
+        }
+        
+        .dark-mode .faq-question {
+            color: var(--text-dark);
+        }
+        
+        .faq-question::after {
+            content: "+";
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .faq-item.active .faq-question::after {
+            transform: rotate(45deg);
+        }
+        
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+        
+        .faq-item.active .faq-answer {
+            padding: 0 20px 20px;
+            max-height: 500px;
+            opacity: 1;
+        }
+        
+        .dark-mode .faq-answer {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .contact {
+            background: linear-gradient(135deg, #141E30, #243B55);
+            position: relative;
+            color: white;
+        }
+        
+        .contact::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1596731498067-3898a809fe1f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80') center/cover no-repeat;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .contact-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+        
+        .contact-info, .contact-form {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .contact-info h3, .contact-form h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .contact-item-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+        }
+        
+        .contact-item-icon img {
+            width: 20px;
+            height: 20px;
+            filter: invert(1);
+        }
+        
+        .contact .section-title {
+            color: white;
+        }
+        
+        .contact .section-title::after {
+            background-color: white;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border-radius: 5px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 150px;
+        }
+        
+        .form-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .form-button:hover {
+            background-color: #e67e00;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            background-color: var(--dark-bg);
+            color: white;
+            padding: 50px 0 20px;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .footer-logo-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 10px rgba(255, 140, 0, 0.5);
+        }
+        
+        .footer-description {
+            max-width: 300px;
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+        
+        .social-link img {
+            width: 20px;
+            height: 20px;
+            filter: invert(1);
+        }
+        
+        .footer-links h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-links h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+        
+        .footer-links ul {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary-color);
+            padding-left: 5px;
+        }
+        
+        .footer-newsletter p {
+            opacity: 0.7;
+            margin-bottom: 15px;
+            max-width: 300px;
+        }
+        
+        .newsletter-form {
+            display: flex;
+        }
+        
+        .newsletter-input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px 0 0 5px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .newsletter-input:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .newsletter-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .newsletter-button:hover {
+            background-color: #e67e00;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+            
+            .feature-row {
+                flex-direction: column;
+                margin-bottom: 50px;
+            }
+            
+            .feature-row:nth-child(even) {
+                flex-direction: column;
+            }
+            
+            .pricing-card.popular {
+                transform: scale(1);
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <div class="logo-icon">CC</div>
+                Cue Counter
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <span class="toggle-icon">🌙</span>
+                Dark Mode
+            </button>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="container">
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#screenshots">Screenshots</a></li>
+                <li><a href="#detailed">Detailed Features</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <section class="hero">
+        <div class="container">
+            <h1>CUE COUNTER</h1>
+            <p>The Ultimate Snooker Scoreboard App with Advanced Statistics, Break Tracking, and Tournament Management</p>
+            <div>
+                <a href="#" class="cta-button">Download Now</a>
+                <a href="#features" class="cta-button secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+    
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="https://cdn-icons-png.flaticon.com/128/3724/3724441.png" alt="Multilingual">
+                    </div>
+                    <h3 class="feature-title">Multilingual Support</h3>
+                    <p class="feature-description">Use the app in multiple languages including English, Spanish, Chinese, and more. Switch languages easily through settings.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="https://cdn-icons-png.flaticon.com/128/2947/2947677.png" alt="Theme">
+                    </div>
+                    <h3 class="feature-title">Light & Dark Themes</h3>
+                    <p class="feature-description">Choose between light and dark themes to suit your preference and reduce eye strain during evening games.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="https://cdn-icons-png.flaticon.com/128/1023/1023434.png" alt="Statistics">
+                    </div>
+                    <h3 class="feature-title">Advanced Statistics</h3>
+                    <p class="feature-description">Track detailed performance metrics including break percentages, pot success rates, and win/loss ratios.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="https://cdn-icons-png.flaticon.com/128/3364/3364355.png" alt="Timer">
+                    </div>
+                    <h3 class="feature-title">Shot Timer</h3>
+                    <p class="feature-description">Professional shot clock with customizable durations, warnings, and extensions for serious play.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="https://cdn-icons-png.flaticon.com/128/4403/4403541.png" alt="Tournament">
+                    </div>
+                    <h3 class="feature-title">Tournament Management</h3>
+                    <p class="feature-description">Create and manage tournaments with brackets, player rankings, and detailed match statistics.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="https://cdn-icons-png.flaticon.com/128/1055/1055683.png" alt="History">
+                    </div>
+                    <h3 class="feature-title">Match History</h3>
+                    <p class="feature-description">Comprehensive record of all matches played with sortable and filterable results for analysis.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="screenshots" id="screenshots">
+        <div class="container">
+            <h2 class="section-title">App Screenshots</h2>
+            <div class="screenshots-container">
+                <div class="screenshot-card">
+                    <div class="screenshot-placeholder">Main Game Screen<br>Detailed scoreboard with player stats</div>
+                </div>
+                
+                <div class="screenshot-card">
+                    <div class="screenshot-placeholder">Break Statistics Screen<br>Visual breakdown of player performance</div>
+                </div>
+                
+                <div class="screenshot-card">
+                    <div class="screenshot-placeholder">Tournament Brackets<br>Manage tournaments with detailed match tracking</div>
+                </div>
+                
+                <div class="screenshot-card">
+                    <div class="screenshot-placeholder">Match History<br>Comprehensive record of all games played</div>
+                </div>
+                
+                <div class="screenshot-card">
+                    <div class="screenshot-placeholder">Settings Screen<br>Customizable app preferences</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="features-detailed" id="detailed">
+        <div class="container">
+            <h2 class="section-title">Detailed Features</h2>
+            
+            <div class="feature-row">
+                <div class="feature-content">
+                    <h3>Comprehensive Match Statistics</h3>
+                    <ul class="feature-list">
+                        <li>Detailed breakdown of every match</li>
+                        <li>Player performance metrics</li>
+                        <li>Break tracking and analysis</li>
+                        <li>Pot success rates and positioning stats</li>
+                        <li>Visual performance graphs and trends</li>
+                    </ul>
+                    <a href="#" class="cta-button">Learn More</a>
+                </div>
+                <div class="feature-image">
+                    <div class="mockup-container">
+                        <div class="mockup-content">
+                            Match Statistics Visualization<br>with Detailed Break Analysis
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="feature-row">
+                <div class="feature-content">
+                    <h3>Professional Shot Timer</h3>
+                    <ul class="feature-list">
+                        <li>Configurable timer durations</li>
+                        <li>Visual and audio warnings</li>
+                        <li>Time extension functionality</li>
+                        <li>Shot time statistics tracking</li>
+                        <li>Tournament-ready timer modes</li>
+                    </ul>
+                    <a href="#" class="cta-button">Learn More</a>
+                </div>
+                <div class="feature-image">
+                    <div class="mockup-container">
+                        <div class="mockup-content">
+                            Shot Timer Interface<br>with Professional Settings
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="feature-row">
+                <div class="feature-content">
+                    <h3>Advanced Tournament Management</h3>
+                    <ul class="feature-list">
+                        <li>Create custom tournaments</li>
+                        <li>Multiple tournament formats</li>
+                        <li>Automatic bracket generation</li>
+                        <li>Player rankings and statistics</li>
+                        <li>Tournament history and records</li>
+                    </ul>
+                    <a href="#" class="cta-button">Learn More</a>
+                </div>
+                <div class="feature-image">
+                    <div class="mockup-container">
+                        <div class="mockup-content">
+                            Tournament Management System<br>with Brackets and Player Stats
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <h2 class="section-title">What Players Say</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-content">"As a professional snooker player, I've tried many scoring apps, but Cue Counter is by far the most comprehensive. The break statistics and shot timer have significantly improved my practice sessions."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">MJ</div>
+                        <div class="author-info">
+                            <h4>Michael Johnson</h4>
+                            <p>Professional Player</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <p class="testimonial-content">"The tournament management feature is perfect for our local snooker club. We're now able to run professional-level tournaments with all the statistics and management tools we need."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">SC</div>
+                        <div class="author-info">
+                            <h4>Sarah Chen</h4>
+                            <p>Snooker Club Manager</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <p class="testimonial-content">"I love how this app keeps track of all my games and breaks. The dark mode is perfect for evening games, and being able to switch between languages is great for our international tournaments."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">DP</div>
+                        <div class="author-info">
+                            <h4>David Patel</h4>
+                            <p>Amateur Enthusiast</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 class="section-title">Simple Pricing</h2>
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <div class="pricing-name">Free</div>
+                        <div class="pricing-price">$0</div>
+                        <div class="pricing-period">Forever</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Basic scorekeeping</li>
+                        <li>Light & dark themes</li>
+                        <li>2 languages</li>
+                        <li>Match history (last 10 matches)</li>
+                        <li class="disabled">Advanced statistics</li>
+                        <li class="disabled">Shot timer</li>
+                        <li class="disabled">Tournament management</li>
+                        <li class="disabled">Ad-free experience</li>
+                    </ul>
+                    <a href="#" class="pricing-button">Download Free</a>
+                </div>
+                
+                <div class="pricing-card popular">
+                    <div class="pricing-header">
+                        <div class="pricing-name">Pro</div>
+                        <div class="pricing-price">$4.99</div>
+                        <div class="pricing-period">per month</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Advanced scorekeeping</li>
+                        <li>Light & dark themes</li>
+                        <li>All languages</li>
+                        <li>Unlimited match history</li>
+                        <li>Advanced statistics</li>
+                        <li>Shot timer</li>
+                        <li>Tournament management</li>
+                        <li>Ad-free experience</li>
+                    </ul>
+                    <a href="#" class="pricing-button">Get Pro</a>
+                </div>
+                
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <div class="pricing-name">Lifetime</div>
+                        <div class="pricing-price">$49.99</div>
+                        <div class="pricing-period">one-time payment</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Everything in Pro</li>
+                        <li>Pay once, use forever</li>
+                        <li>Priority support</li>
+                        <li>Early access to new features</li>
+                        <li>Custom themes</li>
+                        <li>Data export options</li>
+                        <li>Cloud backup</li>
+                        <li>Multiple device sync</li>
+                    </ul>
+                    <a href="#" class="pricing-button">Get Lifetime</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="faq" id="faq">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">What devices does Cue Counter support?</div>
+                    <div class="faq-answer">
+                        <p>Cue Counter is available for both iOS and Android devices. It's optimized for both phones and tablets to provide the best experience regardless of screen size.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Can I use the app offline?</div>
+                    <div class="faq-answer">
+                        <p>Yes, Cue Counter works completely offline. All your match data is stored locally on your device. If you choose the Pro or Lifetime plan, you also get the option to back up your data to the cloud when connected to the internet.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">What languages are supported?</div>
+                    <div class="faq-answer">
+                        <p>The free version supports English and Spanish. The Pro and Lifetime versions support all major languages including English, Spanish, Chinese, Hindi, French, and Arabic. We're constantly adding more languages.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Can I switch from monthly to lifetime subscription?</div>
+                    <div class="faq-answer">
+                        <p>Yes, you can upgrade from the monthly Pro subscription to the Lifetime plan at any time. We'll even provide a prorated discount based on your current subscription.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">How does the tournament management work?</div>
+                    <div class="faq-answer">
+                        <p>The tournament management system allows you to create various tournament formats including knockout, double elimination, round robin, and swiss system. You can add players, generate brackets automatically, track scores, and view comprehensive statistics for the entire tournament.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Is there a desktop version available?</div>
+                    <div class="faq-answer">
+                        <p>Currently, Cue Counter is only available for mobile devices. However, we're working on a web version that will allow you to view your statistics and manage tournaments from your desktop. This feature will be available to Pro and Lifetime subscribers.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2 class="section-title">Get In Touch</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Contact Information</h3>
+                    <div class="contact-item">
+                        <div class="contact-item-icon">
+                            <img src="https://cdn-icons-png.flaticon.com/128/542/542689.png" alt="Email">
+                        </div>
+                        <div>support@cuecounter.com</div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-item-icon">
+                            <img src="https://cdn-icons-png.flaticon.com/128/2190/2190552.png" alt="Phone">
+                        </div>
+                        <div>+1 (555) 123-4567</div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-item-icon">
+                            <img src="https://cdn-icons-png.flaticon.com/128/484/484167.png" alt="Location">
+                        </div>
+                        <div>123 App Street, Silicon Valley, CA 94000</div>
+                    </div>
+                    
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link">
+                            <img src="https://cdn-icons-png.flaticon.com/128/733/733547.png" alt="Facebook">
+                        </a>
+                        <a href="#" class="social-link">
+                            <img src="https://cdn-icons-png.flaticon.com/128/733/733579.png" alt="Twitter">
+                        </a>
+                        <a href="#" class="social-link">
+                            <img src="https://cdn-icons-png.flaticon.com/128/2111/2111463.png" alt="Instagram">
+                        </a>
+                        <a href="#" class="social-link">
+                            <img src="https://cdn-icons-png.flaticon.com/128/3536/3536505.png" alt="LinkedIn">
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="contact-form">
+                    <h3>Send Us a Message</h3>
+                    <form>
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Your Name">
+                        </div>
+                        <div class="form-group">
+                            <input type="email" class="form-control" placeholder="Your Email">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Subject">
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" placeholder="Your Message"></textarea>
+                        </div>
+                        <button type="submit" class="form-button">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <div class="footer-logo">
+                        <div class="footer-logo-icon">CC</div>
+                        Cue Counter
+                    </div>
+                    <p class="footer-description">The ultimate snooker scoreboard app with advanced statistics, break tracking, and tournament management.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">
+                            <img src="https://cdn-icons-png.flaticon.com/128/733/733547.png" alt="Facebook">
+                        </a>
+                        <a href="#" class="social-link">
+                            <img src="https://cdn-icons-png.flaticon.com/128/733/733579.png" alt="Twitter">
+                        </a>
+                        <a href="#" class="social-link">
+                            <img src="https://cdn-icons-png.flaticon.com/128/2111/2111463.png" alt="Instagram">
+                        </a>
+                        <a href="#" class="social-link">
+                            <img src="https://cdn-icons-png.flaticon.com/128/3536/3536505.png" alt="LinkedIn">
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#screenshots">Screenshots</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#testimonials">Testimonials</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">User Guide</a></li>
+                        <li><a href="#">Report a Bug</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-newsletter">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to our newsletter to receive updates, news, and exclusive offers.</p>
+                    <form class="newsletter-form">
+                        <input type="email" class="newsletter-input" placeholder="Your Email">
+                        <button type="submit" class="newsletter-button">
+                            <img src="https://cdn-icons-png.flaticon.com/128/3682/3682321.png" alt="Send" style="width: 20px; height: 20px; filter: invert(1);">
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Cue Counter. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const toggleIcon = document.querySelector('.toggle-icon');
+        const toggleText = themeToggle.textContent.trim().replace('🌙', '').replace('☀️', '').trim();
+        
+        // Check for saved theme preference or use OS preference
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            body.classList.add('dark-mode');
+            toggleIcon.textContent = '☀️';
+            themeToggle.textContent = '☀️ Light Mode';
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                toggleIcon.textContent = '☀️';
+                themeToggle.textContent = '☀️ Light Mode';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                toggleIcon.textContent = '🌙';
+                themeToggle.textContent = '🌙 Dark Mode';
+                localStorage.setItem('theme', 'light');
+            }
+        });
+        
+        // FAQ Accordion
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            
+            question.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+                
+                // Close all items
+                faqItems.forEach(faqItem => {
+                    faqItem.classList.remove('active');
+                });
+                
+                // Open clicked item if it wasn't active
+                if (!isActive) {
+                    item.classList.add('active');
+                }
+            });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
