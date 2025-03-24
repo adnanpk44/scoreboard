@@ -1593,7 +1593,7 @@
                     window.scrollTo({
                         top: targetElement.offsetTop - 80,
                         behavior: 'smooth'
-                    });
+                    }); 
                 }
             });
         });
